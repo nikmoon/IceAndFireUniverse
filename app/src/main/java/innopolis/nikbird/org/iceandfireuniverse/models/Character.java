@@ -30,7 +30,7 @@ public class Character implements ICharacter {
     private String mGender;
     private String mCulture;
 
-    private Character() {
+    public Character() {
         mId = getNextId();
     }
 
@@ -117,5 +117,61 @@ public class Character implements ICharacter {
     @Override
     public String[] getPlayedBy() {
         return mPlayedBy;
+    }
+
+    public void setUrlString(String mUrlString) {
+        this.mUrlString = mUrlString;
+    }
+
+    public void setBorn(String mBorn) {
+        this.mBorn = mBorn;
+    }
+
+    public void setDied(String mDied) {
+        this.mDied = mDied;
+    }
+
+    public void setTitles(String[] mTitles) {
+        this.mTitles = mTitles;
+    }
+
+    public void setAliases(String[] mAliases) {
+        this.mAliases = mAliases;
+    }
+
+    public void setFather(String mFather) {
+        this.mFather = mFather;
+    }
+
+    public void setMother(String mMother) {
+        this.mMother = mMother;
+    }
+
+    public void setAllegiances(String[] mAllegiances) {
+        this.mAllegiances = mAllegiances;
+    }
+
+    public void setBooks(String[] mBooks) {
+        this.mBooks = mBooks;
+    }
+
+    public void setTvSeries(String[] mTvSeries) {
+        this.mTvSeries = mTvSeries;
+    }
+
+    public void setPlayedBy(String[] mPlayedBy) {
+        this.mPlayedBy = mPlayedBy;
+    }
+
+    public void setName(String mName) {
+        this.mName = mName;
+    }
+
+    public void setGender(String mGender) {
+        this.mGender = mGender;
+    }
+
+    public void setCulture(String mCulture) {
+        this.mCulture = mCulture;
     }
 }
