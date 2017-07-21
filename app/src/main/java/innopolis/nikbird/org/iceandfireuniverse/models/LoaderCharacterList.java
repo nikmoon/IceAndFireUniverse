@@ -65,6 +65,7 @@ public class LoaderCharacterList extends AsyncTaskLoader<List<ICharacter>> {
     @Override
     public List<ICharacter> loadInBackground() {
         mCharacters = readCharacters();
+        
         return mCharacters;
     }
 
@@ -95,17 +96,6 @@ public class LoaderCharacterList extends AsyncTaskLoader<List<ICharacter>> {
                 JSONObject jsonCharacter = jsonArray.getJSONObject(i);
                 character = parseCharacter(jsonCharacter);
                 characters.add(character);
-            }
-            if (mListener != null) {
-                mHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        mListener.onProgress(null);
-                    }
-                });
-            }
-            for(int i = jsonArray.length(); true; i++) {
-
             }
         } catch (BadHttpResponseCodeException e) {
             e.printStackTrace();
