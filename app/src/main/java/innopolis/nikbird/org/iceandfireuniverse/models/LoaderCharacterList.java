@@ -104,7 +104,9 @@ public class LoaderCharacterList extends AsyncTaskLoader<List<ICharacter>> {
                     }
                 });
             }
-            for(int i = jsonArray)
+            for(int i = jsonArray.length(); true; i++) {
+
+            }
         } catch (BadHttpResponseCodeException e) {
             e.printStackTrace();
             Log.i(ActivityMain.LOG_TAG, "Http sesponse code = " + responseCode);
@@ -137,6 +139,11 @@ public class LoaderCharacterList extends AsyncTaskLoader<List<ICharacter>> {
         character.setBooks(getArray(jsonObject.getJSONArray("books")));
         character.setTvSeries(getArray(jsonObject.getJSONArray("tvSeries")));
         character.setPlayedBy(getArray(jsonObject.getJSONArray("playedBy")));
+        return character;
+    }
+
+    private ICharacter readCharacter() {
+        Character character = new Character();
         return character;
     }
 
