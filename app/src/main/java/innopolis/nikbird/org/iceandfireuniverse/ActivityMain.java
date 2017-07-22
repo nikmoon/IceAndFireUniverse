@@ -1,5 +1,6 @@
 package innopolis.nikbird.org.iceandfireuniverse;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
@@ -12,8 +13,9 @@ import innopolis.nikbird.org.iceandfireuniverse.models.LooperThread;
 
 public class ActivityMain
         extends AppCompatActivity
-        implements LooperThread.IReaderThreadListener, CharacterListAdapter.IPageLoader {
+        implements LooperThread.IReaderThreadListener, CharacterListAdapter.IViewModel {
 
+    public static final String EXTRA_CHARACTER_INFO = "innopolis.nikbird.org.char_info";
     public final static String LOG_TAG = "MAIN_ACTIVITY_LOG_TAG";
     public final static String DEFAULT_URL_STRING_TEMPLATE = "https://www.anapioficeandfire.com/api/characters?page=%s&pageSize=%s";
     public final static int DEFAULT_PAGE_SIZE = 30;
@@ -62,6 +64,13 @@ public class ActivityMain
     public void onNewPageNeeded() {
         if (!mLoadingInProgress)
             postRequestNextPage();
+    }
+
+    @Override
+    public void onDetailStart(ICharacter character) {
+        Intent intent = new Intent(this, ActivityDetail.class);
+        intent.putExtra(EXTRA_CHARACTER_INFO, character);
+        startActivity(intent);
     }
 
     private void postRequestNextPage() {

@@ -1,15 +1,12 @@
 package innopolis.nikbird.org.iceandfireuniverse;
 
 import android.os.Build;
-import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -23,12 +20,13 @@ import innopolis.nikbird.org.iceandfireuniverse.interfaces.ICharacter;
 
 public class CharacterListAdapter extends RecyclerView.Adapter {
 
-    public interface IPageLoader {
+    public interface IViewModel {
         void onNewPageNeeded();
+        void onDetailStart(ICharacter character);
     }
 
     private List<ICharacter> mCharacters;
-    private IPageLoader mPageLoader;
+    private IViewModel mViewModel;
 
     private class CharacterItemHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
@@ -54,6 +52,7 @@ public class CharacterListAdapter extends RecyclerView.Adapter {
             for(String alias: aliases) {
                 if (alias != null && !"".equals(alias)) {
                     textView = new TextView(mAliasesView.getContext());
+                    textView.setId(View.generateViewId());
                     textView.setText(alias);
                     if (Build.VERSION.SDK_INT < 23)
                         textView.setTextAppearance(mAliasesView.getContext(), R.style.TextAppearance_AppCompat_Medium);
@@ -72,12 +71,15 @@ public class CharacterListAdapter extends RecyclerView.Adapter {
         @Override
         public void onClick(View view) {
             Log.i(ActivityMain.LOG_TAG, "Button pressed");
+            if (mViewModel != null) {
+                mViewModel.onDetailStart(mCharacters.get(getAdapterPosition()));
+            }
         }
     }
 
-    public CharacterListAdapter(IPageLoader pageLoader) {
+    public CharacterListAdapter(IViewModel pageLoader) {
         mCharacters = new ArrayList<>();
-        mPageLoader = pageLoader;
+        mViewModel = pageLoader;
     }
 
     public void addCharacters(List<ICharacter> characters) {
@@ -99,8 +101,8 @@ public class CharacterListAdapter extends RecyclerView.Adapter {
         ICharacter character = mCharacters.get(position);
         ((CharacterItemHolder) holder).bind(character);
         if ((getItemCount() - position) < 5)
-            if (mPageLoader != null)
-                mPageLoader.onNewPageNeeded();
+            if (mViewModel != null)
+                mViewModel.onNewPageNeeded();
     }
 
     @Override

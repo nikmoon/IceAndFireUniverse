@@ -1,12 +1,14 @@
 package innopolis.nikbird.org.iceandfireuniverse.interfaces;
 
+import android.os.Parcelable;
+
 import java.util.Objects;
 
 /**
  * Created by nikbird on 21.07.17.
  */
 
-public interface ICharacter {
+public interface ICharacter extends Parcelable {
 
     String getUrl();
     String getName();

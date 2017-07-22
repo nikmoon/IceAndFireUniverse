@@ -3,4 +3,10 @@
     <string name="list_title">You know nothing. John Snow</string>
     <string name="name_label">Name of character</string>
     <string name="aliases_label">Aliases</string>
+    <string name="url_label_for_char">URL for character info</string>
+    <string name="gender_label">Gender</string>
+    <string name="culture_label">Culture</string>
+    <string name="born_label">Born</string>
+    <string name="died_label">Died</string>
+    <string name="titles_label">Titles</string>
 </resources>
