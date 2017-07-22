@@ -1,5 +1,13 @@
 package innopolis.nikbird.org.iceandfireuniverse.models;
 
+import android.util.JsonReader;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import innopolis.nikbird.org.iceandfireuniverse.interfaces.ICharacter;
 
 /**
@@ -8,39 +16,66 @@ import innopolis.nikbird.org.iceandfireuniverse.interfaces.ICharacter;
 
 public class Character implements ICharacter {
 
+    //
+    // STATIC
+    //
     private static int sId = 0;
-    private static int getNextId() {
+    private final static int getNextId() {
         return sId++;
     }
 
-    private String mUrlString;
-    private String mBorn;
-    private String mDied;
-    private String[] mTitles;
-    private String[] mAliases;
-    private String mFather;
-    private String mMother;
-    private String[] mAllegiances;
-    private String[] mBooks;
-    private String[] mTvSeries;
-    private String[] mPlayedBy;
-
-    private int mId;
-    private String mName;
-    private String mGender;
-    private String mCulture;
-
-    public Character() {
-        mId = getNextId();
+    private static String[] readStringArray(JsonReader reader) throws IOException {
+        List<String> strings = new ArrayList<>();
+        reader.beginArray();
+        while (reader.hasNext())
+            strings.add(reader.nextString());
+        reader.endArray();
+        return strings.toArray(new String[strings.size()]);
     }
 
-    @Override
-    public int hashCode() {
+    //
+    // NON STATIC
+    //
+    private int mId = getNextId();
+    private Map<String, Object> mProperties = new HashMap<>();
+
+    //
+    // CONSTUCTORS
+    //
+    public Character(JsonReader reader) throws IOException {
+        String name;
+        reader.beginObject();
+        while (reader.hasNext()) {
+            name = reader.nextName();
+            switch (name) {
+                case "uri":
+                case "name":
+                case "gender":
+                case "culture":
+                case "born":
+                case "died":
+                    mProperties.put(name, reader.nextString());
+                    break;
+                case "titles":
+                case "aliases":
+                case "allegiances":
+                    mProperties.put(name, readStringArray(reader));
+                    break;
+                default:
+                    reader.skipValue();
+            }
+        }
+        reader.endObject();
+    }
+
+    //
+    // OVERRIDE
+    //
+    @Override public int hashCode() {
         return mId;
     }
 
-    @Override
-    public boolean equals(Object obj) {
+    @Override public boolean equals(Object obj) {
         if (obj != null && obj instanceof Character) {
             Character c = (Character) obj;
             if (mId == c.mId)
@@ -49,129 +84,36 @@ public class Character implements ICharacter {
         return false;
     }
 
-    @Override
-    public String getUrl() {
-        return mUrlString;
+    @Override public String getUrl() { return getStringProperty("url"); }
+    @Override public String getName() { return getStringProperty("name"); }
+    @Override public String getGender() { return getStringProperty("gender"); }
+    @Override public String getCulture() { return getStringProperty("culture"); }
+    @Override public String getBorn() { return getStringProperty("born"); }
+    @Override public String getDied() { return getStringProperty("died"); }
+    @Override public String[] getTitles() { return getStringArrayProperty("titles"); }
+    @Override public String[] getAliases() { return getStringArrayProperty("aliases"); }
+    @Override public String getFather() { return getStringProperty("father"); }
+    @Override public String getMother() { return getStringProperty("mother"); }
+    @Override public String getSpouse() { return getStringProperty("spouse"); }
+    @Override public String[] getAllegiances() { return getStringArrayProperty("allegiances"); }
+    @Override public String[] getBooks() { return getStringArrayProperty("books"); }
+    @Override public String[] getPovBooks() { return getStringArrayProperty("povBooks"); }
+    @Override public String[] getTvSeries() { return getStringArrayProperty("tvSeries"); }
+    @Override public String[] getPlayedBy() { return getStringArrayProperty("playedBy"); }
+
+
+    //
+    // PRIVATE
+    //
+    private String getStringProperty(String s) {
+        return (String) mProperties.get(s);
     }
 
-    @Override
-    public String getName() {
-        return mName;
+    private String[] getStringArrayProperty(String s) {
+        return (String[]) mProperties.get(s);
     }
 
-    @Override
-    public String getGender() {
-        return mGender;
-    }
-
-    @Override
-    public String getCulture() {
-        return mCulture;
-    }
-
-    @Override
-    public String getBorn() {
-        return mBorn;
-    }
-
-    @Override
-    public String getDied() {
-        return mDied;
-    }
-
-    @Override
-    public String[] getTitles() {
-        return mTitles;
-    }
-
-    @Override
-    public String[] getAliases() {
-        return mAliases;
-    }
-
-    @Override
-    public String getFather() {
-        return mFather;
-    }
-
-    @Override
-    public String getMother() {
-        return mMother;
-    }
-
-    @Override
-    public String[] getAllegiances() {
-        return mAllegiances;
-    }
-
-    @Override
-    public String[] getBooks() {
-        return mBooks;
-    }
-
-    @Override
-    public String[] getTvSeries() {
-        return mTvSeries;
-    }
-
-    @Override
-    public String[] getPlayedBy() {
-        return mPlayedBy;
-    }
-
-    public void setUrlString(String mUrlString) {
-        this.mUrlString = mUrlString;
-    }
-
-    public void setBorn(String mBorn) {
-        this.mBorn = mBorn;
-    }
-
-    public void setDied(String mDied) {
-        this.mDied = mDied;
-    }
-
-    public void setTitles(String[] mTitles) {
-        this.mTitles = mTitles;
-    }
-
-    public void setAliases(String[] mAliases) {
-        this.mAliases = mAliases;
-    }
-
-    public void setFather(String mFather) {
-        this.mFather = mFather;
-    }
-
-    public void setMother(String mMother) {
-        this.mMother = mMother;
-    }
-
-    public void setAllegiances(String[] mAllegiances) {
-        this.mAllegiances = mAllegiances;
-    }
-
-    public void setBooks(String[] mBooks) {
-        this.mBooks = mBooks;
-    }
-
-    public void setTvSeries(String[] mTvSeries) {
-        this.mTvSeries = mTvSeries;
-    }
-
-    public void setPlayedBy(String[] mPlayedBy) {
-        this.mPlayedBy = mPlayedBy;
-    }
-
-    public void setName(String mName) {
-        this.mName = mName;
-    }
-
-    public void setGender(String mGender) {
-        this.mGender = mGender;
-    }
-
-    public void setCulture(String mCulture) {
-        this.mCulture = mCulture;
+    private void setProperty(String s, Object value) {
+        mProperties.put(s, value);
     }
 }
