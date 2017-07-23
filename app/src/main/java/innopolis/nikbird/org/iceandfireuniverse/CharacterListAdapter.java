@@ -2,15 +2,11 @@ package innopolis.nikbird.org.iceandfireuniverse;
 
 import android.os.Build;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import innopolis.nikbird.org.iceandfireuniverse.interfaces.ICharacter;
 
@@ -21,11 +17,11 @@ import innopolis.nikbird.org.iceandfireuniverse.interfaces.ICharacter;
 public class CharacterListAdapter extends RecyclerView.Adapter {
 
     public interface IViewModel {
-        void onNewPageNeeded();
-        void onDetailStart(ICharacter character);
+        void onSelectCharacter(int position);
+        ICharacter getCharacter(int position);
+        int characterCount();
     }
 
-    private List<ICharacter> mCharacters;
     private IViewModel mViewModel;
 
     private class CharacterItemHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -70,51 +66,30 @@ public class CharacterListAdapter extends RecyclerView.Adapter {
 
         @Override
         public void onClick(View view) {
-            Log.i(ActivityMain.LOG_TAG, "Button pressed");
-            if (mViewModel != null) {
-                mViewModel.onDetailStart(mCharacters.get(getAdapterPosition()));
-            }
+            mViewModel.onSelectCharacter(getAdapterPosition());
         }
     }
 
-    public CharacterListAdapter(List<ICharacter> characters, IViewModel viewModel) {
-        mCharacters = characters;
-        mViewModel = viewModel;
-    }
-
     public CharacterListAdapter(IViewModel viewModel) {
-        this(new ArrayList<ICharacter>(ActivityMain.DEFAULT_PAGE_SIZE), viewModel);
-    }
-
-    public List<ICharacter> getCharacters() {
-        return mCharacters;
-    }
-
-    public void addCharacters(List<ICharacter> characters) {
-        int insertPos = mCharacters.size();
-        mCharacters.addAll(characters);
-        notifyItemRangeChanged(insertPos, characters.size());
+        mViewModel = viewModel;
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View inflated = LayoutInflater.from(parent.getContext()).inflate(
                 R.layout.list_row_layout, parent, false);
-
         return new CharacterItemHolder(inflated);
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        ICharacter character = mCharacters.get(position);
+        ICharacter character = mViewModel.getCharacter(position);
         ((CharacterItemHolder) holder).bind(character);
-        if ((getItemCount() - position) < 5)
-            if (mViewModel != null)
-                mViewModel.onNewPageNeeded();
+
     }
 
     @Override
     public int getItemCount() {
-        return mCharacters.size();
+        return mViewModel.characterCount();
     }
 }
