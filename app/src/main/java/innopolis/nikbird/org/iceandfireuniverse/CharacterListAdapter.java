@@ -77,9 +77,17 @@ public class CharacterListAdapter extends RecyclerView.Adapter {
         }
     }
 
-    public CharacterListAdapter(IViewModel pageLoader) {
-        mCharacters = new ArrayList<>();
-        mViewModel = pageLoader;
+    public CharacterListAdapter(List<ICharacter> characters, IViewModel viewModel) {
+        mCharacters = characters;
+        mViewModel = viewModel;
+    }
+
+    public CharacterListAdapter(IViewModel viewModel) {
+        this(new ArrayList<ICharacter>(ActivityMain.DEFAULT_PAGE_SIZE), viewModel);
+    }
+
+    public List<ICharacter> getCharacters() {
+        return mCharacters;
     }
 
     public void addCharacters(List<ICharacter> characters) {

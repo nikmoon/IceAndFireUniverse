@@ -21,11 +21,6 @@ public class Character implements ICharacter {
     //
     // STATIC
     //
-    private static int sId = 0;
-    private final static int getNextId() {
-        return sId++;
-    }
-
     private static String[] readStringArray(JsonReader reader) throws IOException {
         List<String> strings = new ArrayList<>();
         reader.beginArray();
@@ -38,13 +33,16 @@ public class Character implements ICharacter {
     //
     // NON STATIC
     //
-    private int mId = getNextId();
+    private int mId = -1;
     private Map<String, Object> mProperties = new HashMap<>();
 
     //
     // CONSTUCTORS
     //
-    public Character(JsonReader reader) throws IOException {
+    public static class MissedURLException extends Exception {}
+    public static class MissedIdException extends Exception {}
+
+    public Character(JsonReader reader) throws IOException, MissedURLException, MissedIdException {
         String name;
         reader.beginObject();
         while (reader.hasNext()) {
@@ -58,6 +56,12 @@ public class Character implements ICharacter {
                 reader.skipValue();
         }
         reader.endObject();
+
+        if ((name = (String) mProperties.get("url")) != null) {
+            mId = makeId(name);
+        } else {
+            throw new MissedURLException();
+        }
     }
 
     //
@@ -97,7 +101,6 @@ public class Character implements ICharacter {
     // Parcelable
     public static final Parcelable.Creator<Character> CREATOR
             = new Parcelable.Creator<Character>() {
-
         @Override public Character createFromParcel(Parcel parcel) { return new Character(parcel); }
         @Override public Character[] newArray(int i) { return new Character[i]; }
     };
@@ -143,10 +146,18 @@ public class Character implements ICharacter {
     //
     // PRIVATE
     //
+    private int makeId(String url) throws MissedIdException {
+        String[] tokens = url.split("/");
+        try {
+            return Integer.parseInt(tokens[tokens.length - 1]);
+        } catch (NumberFormatException e) {
+            throw new MissedIdException();
+        }
+    }
+
     private String getStringProperty(String s) {
         return (String) mProperties.get(s);
     }
-
     private String[] getStringArrayProperty(String s) {
         return (String[]) mProperties.get(s);
     }

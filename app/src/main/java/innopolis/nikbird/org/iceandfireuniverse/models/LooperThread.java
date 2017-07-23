@@ -9,10 +9,8 @@ import android.util.Log;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.Thread;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,16 +44,16 @@ public class LooperThread extends Thread {
         mMainHandler = new Handler();
     }
 
+    public void setListener(IReaderThreadListener listener) {
+        mListener = listener;
+    }
+
     @Override
     public void run() {
         Looper.prepare();
         mHandler = new LooperHandler();
         notifyHandlerReady();
         Looper.loop();
-    }
-
-    public void postRequest(int requestId, String urlString) {
-        mHandler.post(new Request(requestId, urlString));
     }
 
     private void notifyHandlerReady() {
@@ -87,10 +85,13 @@ public class LooperThread extends Thread {
         }
     }
 
-
     public class LooperHandler extends Handler {
         public void postRequest(int requestId, String urlString) {
             post(new Request(requestId, urlString));
+        }
+
+        public LooperThread getThread() {
+            return (LooperThread) getLooper().getThread();
         }
     }
 
@@ -115,11 +116,17 @@ public class LooperThread extends Thread {
             int responseCode = 0;
             JsonReader reader;
 
+            try {
+                sleep(5000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
             Log.i(LOG_TAG, "New loading begin: " + mUrlString);
             try {
                 url = new URL(mUrlString);
                 conn = (HttpsURLConnection) url.openConnection();
-                if ( (responseCode = conn.getResponseCode()) != HttpURLConnection.HTTP_OK)
+                if ( (responseCode = conn.getResponseCode()) != HttpsURLConnection.HTTP_OK)
                     throw new BadResponseException();
                 reader = new JsonReader(new InputStreamReader(conn.getInputStream()));
                 mCharacters = new ArrayList<>();
@@ -137,6 +144,10 @@ public class LooperThread extends Thread {
                 notifyRequestFail(mId, "Casting URLConnection to HttpsURLConnection failed");
             } catch (BadResponseException e) {
                 notifyRequestFail(mId, "Response code: " + responseCode);
+            } catch (Character.MissedURLException e) {
+                notifyRequestFail(mId, "Missed \"url\" key");
+            } catch (Character.MissedIdException e) {
+                notifyRequestFail(mId, "Missed id in url");
             }
         }
     }

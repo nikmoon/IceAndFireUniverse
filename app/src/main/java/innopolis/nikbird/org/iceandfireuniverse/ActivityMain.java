@@ -18,7 +18,7 @@ public class ActivityMain
     public static final String EXTRA_CHARACTER_INFO = "innopolis.nikbird.org.char_info";
     public final static String LOG_TAG = "MAIN_ACTIVITY_LOG_TAG";
     public final static String DEFAULT_URL_STRING_TEMPLATE = "https://www.anapioficeandfire.com/api/characters?page=%s&pageSize=%s";
-    public final static int DEFAULT_PAGE_SIZE = 30;
+    public final static int DEFAULT_PAGE_SIZE = 50;
 
     private String mUrlStringTemplate;
     private int mNextPage = 1;
@@ -32,12 +32,31 @@ public class ActivityMain
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mUrlStringTemplate = DEFAULT_URL_STRING_TEMPLATE;
-        mPageSize = DEFAULT_PAGE_SIZE;
-
+        RecyclerView.Adapter adapter;
+        ActivityMain prevActivity = (ActivityMain) getLastCustomNonConfigurationInstance();
+        if (prevActivity != null) {
+            mUrlStringTemplate = prevActivity.mUrlStringTemplate;
+            mPageSize = prevActivity.mPageSize;
+            mNextPage = prevActivity.mNextPage;
+            mLoadingInProgress = prevActivity.mLoadingInProgress;
+            mLooperHandler = prevActivity.mLooperHandler;
+            mLooperHandler.getThread().setListener(this);
+            CharacterListAdapter characterListAdapter =
+                    (CharacterListAdapter) prevActivity.mCharacterListView.getAdapter();
+            adapter = new CharacterListAdapter(characterListAdapter.getCharacters(), this);
+        } else {
+            mUrlStringTemplate = DEFAULT_URL_STRING_TEMPLATE;
+            mPageSize = DEFAULT_PAGE_SIZE;
+            new LooperThread(getApplicationContext(), this).start();
+            adapter = new CharacterListAdapter(this);
+        }
         mCharacterListView = (RecyclerView) findViewById(R.id.rcvList);
-        mCharacterListView.setAdapter(new CharacterListAdapter(this));
-        new LooperThread(getApplicationContext(), this).start();
+        mCharacterListView.setAdapter(adapter);
+    }
+
+    @Override
+    public Object onRetainCustomNonConfigurationInstance() {
+        return this;
     }
 
     @Override
