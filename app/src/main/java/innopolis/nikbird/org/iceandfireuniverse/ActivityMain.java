@@ -21,7 +21,7 @@ public class ActivityMain
     public final static String LOG_TAG = "MAIN_ACTIVITY_LOG_TAG";
 
     /**
-     *  Оказалось, что 50 - максимальное значение страницы, возвращаемое ресурсом
+     *  Оказалось, что 50 - максимальное значение записей на странице, возвращаемое ресурсом
      */
     public final static int DEFAULT_PAGE_SIZE = 50;
 
@@ -88,7 +88,7 @@ public class ActivityMain
 
     @Override
     public ICharacter getCharacter(int position) {
-        if ((mCharacters.size() - position) < 20 && !isPageLoading)
+        if ((mCharacters.size() - position) < 20)
             requestNextPage();
         return mCharacters.get(position);
     }
@@ -99,7 +99,9 @@ public class ActivityMain
     }
 
     private void requestNextPage() {
-        mDataModel.requestData(0, new IDataModel.PageRequest(mNextPage, mPageSize));
-        isPageLoading = true;
+        if (!isPageLoading) {
+            mDataModel.requestData(0, new IDataModel.PageRequest(mNextPage, mPageSize));
+            isPageLoading = true;
+        }
     }
 }
