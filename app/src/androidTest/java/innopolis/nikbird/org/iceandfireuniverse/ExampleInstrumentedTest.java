@@ -37,7 +37,7 @@ public class ExampleInstrumentedTest {
     }
 
     @Test
-    public void characterCreationJson_isCorrect() throws IOException {
+    public void characterCreationJson_isCorrect() throws IOException, Character.MissedURLException, Character.MissedIdException {
         ICharacter character = createJsonCharacter(makeJsonString());
 
         assertEquals(character.getUrl(), "https://www.anapioficeandfire.com/api/characters/1");
@@ -52,7 +52,7 @@ public class ExampleInstrumentedTest {
     }
 
     @Test
-    public void characterParcellable_isCorrect() throws IOException {
+    public void characterParcellable_isCorrect() throws IOException, Character.MissedURLException, Character.MissedIdException {
         ICharacter character = createJsonCharacter(makeJsonString());
 
         Parcel parcel = Parcel.obtain();
@@ -72,9 +72,8 @@ public class ExampleInstrumentedTest {
         assertEquals(character.getAliases()[1], charFromParcel.getAliases()[1]);
 
     }
-
-
-    private ICharacter createJsonCharacter(String json) throws IOException {
+    
+    private ICharacter createJsonCharacter(String json) throws IOException, Character.MissedURLException, Character.MissedIdException {
         InputStream in = new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8));
         JsonReader reader = new JsonReader(new InputStreamReader(in));
         ICharacter character = new Character(reader);
